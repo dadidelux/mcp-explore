@@ -1,0 +1,27 @@
+{
+    "servers": {
+        "Context7": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@upstash/context7-mcp@latest"]
+        },
+        "playwright": {
+        "command": "npx",
+        "args": [
+            "@playwright/mcp@latest"
+        ]
+        }
+    },
+    "inputs": [
+        {
+            "id": "baseDirectory",
+            "type": "promptString",
+            "description": "Enter the base directory path for the server"
+        },
+        {
+            "id": "allowedDirectory",
+            "type": "promptString",
+            "description": "Enter the path to another allowed directory"
+        }
+    ]
+}
