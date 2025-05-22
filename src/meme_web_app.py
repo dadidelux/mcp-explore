@@ -75,7 +75,8 @@ TEMPLATES = [
 ]
 
 def generate_meme(template_id, text0, text1=None):
-    url = 'https://api.imgflip.com/caption_image'    params = {
+    url = 'https://api.imgflip.com/caption_image'
+    params = {
         'template_id': template_id,
         'username': os.getenv('IMGFLIP_USERNAME'),
         'password': os.getenv('IMGFLIP_PASSWORD'),
