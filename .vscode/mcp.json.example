@@ -1,0 +1,54 @@
+{
+    "servers": {
+        "Context7": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp@latest"]
+        },
+        "playwright": {
+            "command": "npx",
+            "args": ["@playwright/mcp@latest"]
+        },
+        "mcp-clickhouse": {
+            "command": "uv",
+            "args": [
+                "run",
+                "--with",
+                "mcp-clickhouse",
+                "--python",
+                "3.13",
+                "mcp-clickhouse"
+            ],
+            "env": {
+                "CLICKHOUSE_HOST": "your_host",
+                "CLICKHOUSE_PORT": "your_port",
+                "CLICKHOUSE_USER": "your_user",
+                "CLICKHOUSE_PASSWORD": "your_password",
+                "CLICKHOUSE_SECURE": "false",
+                "CLICKHOUSE_VERIFY": "false",
+                "CLICKHOUSE_CONNECT_TIMEOUT": "30",
+                "CLICKHOUSE_SEND_RECEIVE_TIMEOUT": "30"
+            }
+        },
+        "meme": {
+            "command": "npx",
+            "args": ["-y", "meme-mcp"],
+            "env": {
+                "IMGFLIP_USERNAME": "your_username",
+                "IMGFLIP_PASSWORD": "your_password"
+            }
+        }
+    },
+    "inputs": [
+        {
+            "id": "baseDirectory",
+            "type": "promptString",
+            "description": "Enter the base directory path for the server"
+        },
+        {
+            "id": "allowedDirectory",
+            "type": "promptString",
+            "description": "Enter the path to another allowed directory"
+        }
+    ]
+}
