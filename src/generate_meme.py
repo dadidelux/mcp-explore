@@ -1,9 +1,5 @@
 import requests
 import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env if present
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 def save_meme(template_id, text0, text1=None, output_path=None):
     # Imgflip API endpoint
@@ -12,8 +8,8 @@ def save_meme(template_id, text0, text1=None, output_path=None):
     # Your credentials from mcp.json
     params = {
         'template_id': template_id,
-        'username': os.environ.get('IMGFLIP_USERNAME', ''),
-        'password': os.environ.get('IMGFLIP_PASSWORD', ''),
+        'username': os.environ.get('IMGFLIP_USERNAME'),
+        'password': os.environ.get('IMGFLIP_PASSWORD'),
         'text0': text0,
     }
     if text1:
