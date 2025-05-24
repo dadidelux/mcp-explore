@@ -7,4 +7,5 @@ urlpatterns = [
     path('generate/', views.generate_meme, name='generate_meme'),
     path('templates/', views.get_templates, name='get_templates'),
     path('ai/', views.ai_generate_meme, name='ai_generate_meme'),
+    path('health/', views.health_check, name='health_check'),
 ]

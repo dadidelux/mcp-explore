@@ -215,3 +215,14 @@ def ai_generate_meme(request):
     return render(request, 'meme_generator/index.html', {
         'templates': get_all_meme_templates()
     })
+
+@csrf_exempt
+def health_check(request):
+    """
+    Health check endpoint for monitoring and Docker health checks
+    """
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'meme-generator',
+        'mode': 'development' if os.getenv('DEBUG') == '1' else 'production'
+    })
