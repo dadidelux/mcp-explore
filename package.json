@@ -1,0 +1,14 @@
+{
+    "name": "mcp-explore",
+    "version": "1.0.0",
+    "description": "Local MCP project configuration",
+    "private": true,
+    "dependencies": {
+        "@upstash/context7-mcp": "latest",
+        "@playwright/mcp": "latest",
+        "meme-mcp": "latest"
+    },
+    "scripts": {
+        "start-mcp": "node src/mcp_server.js"
+    }
+} 
