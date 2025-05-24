@@ -1,8 +1,17 @@
-# Example requirements for a data stack
+# Core requirements
+django>=5.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Development tools
+typing-extensions>=4.5.0
+
+# Data processing
 pandas
 numpy
 matplotlib
 scikit-learn
-jupyter
-asyncio>=3.4.3
-typing-extensions>=4.5.0
+
+# Web related
+aiohttp>=3.9.0
+websockets>=12.0
