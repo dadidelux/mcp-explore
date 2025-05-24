@@ -20,7 +20,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-outputs/
+# outputs/
 data/
 conversation_log.md
 .vscode/mcp.json
@@ -73,7 +73,7 @@ coverage/
 # Media and asset files
 *.jpg
 *.jpeg
-*.png
+# *.png
 *.gif
 *.ico
 *.svg
