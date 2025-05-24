@@ -1,20 +1,44 @@
+# Environment files
+.env
+.env.*
+.venv
+.envrc
+*.egg-info/
+.env.nginx
+.env.prod
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.env
-.venv
-.envrc
-*.egg-info/
 outputs/
 data/
 conversation_log.md
 .vscode/mcp.json
 mcp.json
 
-# Backup folder
+# Backup folder and files
 backup/
+*.bak
+*.old
+*.new
+*.backup
+settings_.py
+
+# SSL files
+ssl/
+*.crt
+*.key
+*.pem
 
 # Static files and build directories
 staticfiles/

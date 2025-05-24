@@ -8,44 +8,274 @@
         .meme-form { max-width: 600px; margin: 0 auto; }
         .meme-preview { margin-top: 20px; text-align: center; }
         .meme-preview img { max-width: 100%; height: auto; }
+        .error-message { color: #dc3545; margin-top: 1rem; }
+        .nav-tabs { margin-bottom: 20px; }
+        
+        /* Preloader styles */
+        .preloader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .preloader.active {
+            display: block;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Tutorial button styles */
+        .nav-item .btn-tutorial {
+            margin-top: 4px;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-center mb-4">Meme Generator</h1>
         
-        <div class="meme-form">
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="template_id" class="form-label">Choose Template</label>
-                    <select name="template_id" id="template_id" class="form-control" required>
-                        {% for template in templates %}
-                            <option value="{{ template.id }}">{{ template.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="text0" class="form-label">Top Text</label>
-                    <input type="text" name="text0" id="text0" class="form-control" required>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="text1" class="form-label">Bottom Text</label>
-                    <input type="text" name="text1" id="text1" class="form-control">
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Generate Meme</button>
-            </form>
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
         </div>
-        
-        {% if meme_url %}
-            <div class="meme-preview">
-                <h2>Your Meme:</h2>
-                <img src="{{ meme_url }}" alt="Generated Meme">
-            </div>
         {% endif %}
-    </div>
+        
+        <ul class="nav nav-tabs" role="tablist">            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#manual">Manual</a>
+            </li>            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#ai">AI-Powered</a>
+            </li>
+            <li class="nav-item ms-auto">
+                <button type="button" class="btn btn-outline-info btn-sm btn-tutorial" id="showTutorial">
+                    <i class="bi bi-question-circle"></i> Tutorial
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Add Bootstrap Icons CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+        
+        <div class="tab-content">
+            <div id="manual" class="tab-pane active">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="meme-form">
+                            <form method="post" action="{% url 'meme_generator:generate_meme' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="template_id" class="form-label">Choose Template</label>
+                                    <select name="template_id" id="template_id" class="form-control" required>
+                                        {% for template in templates %}
+                                            <option value="{{ template.id }}"{% if selected_template.id == template.id %} selected{% endif %}>
+                                                {{ template.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="text0" class="form-label">Top Text</label>
+                                    <input type="text" name="text0" id="text0" class="form-control" required value="{{ text0|default:'' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="text1" class="form-label">Bottom Text</label>
+                                    <input type="text" name="text1" id="text1" class="form-control" value="{{ text1|default:'' }}">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">Generate Meme</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {% if meme_url %}
+                            <div class="meme-preview">
+                                <h2>Your Generated Meme:</h2>
+                                <img src="{{ meme_url }}" alt="Generated Meme" class="img-fluid mb-3">
+                                <div>
+                                    <a href="{{ meme_url }}" class="btn btn-secondary" target="_blank">
+                                        Open in New Tab
+                                    </a>
+                                </div>
+                                {% if selected_template %}
+                                    <div class="mt-3">
+                                        <small class="text-muted">Template: {{ selected_template.name }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ai" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="meme-form">
+                            <form method="post" action="{% url 'meme_generator:ai_generate_meme' %}">
+                                {% csrf_token %}                                <div class="mb-3">
+                                    <label for="prompt" class="form-label">Describe Your Meme</label>                                    <textarea name="prompt" id="prompt" class="form-control" rows="4" required 
+                                        placeholder="Example 1: surprise me with a meme about debugging code&#10;Example 2: use drake template to compare python and javascript">{{ prompt|default:'' }}</textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary" id="generateBtn">Generate AI Meme</button>
+                            </form>
+                            <div class="preloader" id="aiPreloader">
+                                <div class="spinner"></div>
+                                <p class="mt-3">AI is working on your meme...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {% if meme_url %}
+                            <div class="meme-preview">
+                                <h2>Your AI-Generated Meme:</h2>
+                                <img src="{{ meme_url }}" alt="Generated Meme" class="img-fluid mb-3">
+                                <div>
+                                    <a href="{{ meme_url }}" class="btn btn-secondary" target="_blank">
+                                        Open in New Tab
+                                    </a>
+                                </div>
+                                {% if selected_template %}
+                                    <div class="mt-3">
+                                        <small class="text-muted">AI Selected Template: {{ selected_template.name }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>    </div>
+    
+    <!-- AI Prompt Help Modal -->
+    <div class="modal fade" id="aiPromptHelpModal" tabindex="-1" aria-labelledby="aiPromptHelpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aiPromptHelpModalLabel">How to Write Effective AI Meme Prompts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="mb-4">There are two ways to generate memes with AI:</h6>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            1. Let AI Choose Everything (Surprise Me)
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Just provide your theme and let AI handle the rest!</p>
+                            <div class="alert alert-info">
+                                <strong>Examples:</strong>
+                                <ul class="mb-0">
+                                    <li>"surprise me with a meme about programmers debugging code"</li>
+                                    <li>"create something funny about data engineers"</li>
+                                    <li>"make a meme about javascript frameworks"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            2. Specify Template and Context
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Want a specific template? Just mention it in your prompt!</p>
+                            <div class="alert alert-info">
+                                <strong>Examples:</strong>
+                                <ul class="mb-0">
+                                    <li>"use drake template to compare python and javascript"</li>
+                                    <li>"create a distracted boyfriend meme about new frameworks"</li>
+                                    <li>"disaster girl template with production server issues"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var aiTabLink = document.querySelector('a[href="#ai"]');
+            var aiPromptHelpModal = new bootstrap.Modal(document.getElementById('aiPromptHelpModal'));
+            var hasSeenModal = sessionStorage.getItem('hasSeenAiPromptHelp');
+            var promptTextarea = document.getElementById('prompt');
+            var showTutorialBtn = document.getElementById('showTutorial');
+            var aiForm = document.querySelector('#ai form');
+            var preloader = document.getElementById('aiPreloader');
+            
+            // Show the help modal when switching to AI tab (first time only)
+            aiTabLink.addEventListener('click', function() {
+                if (!hasSeenModal) {
+                    aiPromptHelpModal.show();
+                    sessionStorage.setItem('hasSeenAiPromptHelp', 'true');
+                }
+            });
+
+            // Show tutorial button handler
+            showTutorialBtn.addEventListener('click', function() {
+                aiPromptHelpModal.show();
+            });
+
+            // Handle form submission and show preloader
+            aiForm.addEventListener('submit', function(e) {
+                const promptText = promptTextarea.value.trim();
+                if (promptText) {
+                    preloader.classList.add('active');
+                }
+            });
+
+            // Handle Ctrl+Enter in prompt textarea
+            promptTextarea.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    const promptText = promptTextarea.value.trim();
+                    
+                    if (!promptText) {
+                        // Create and show error message
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'alert alert-danger mt-2';
+                        errorDiv.textContent = 'Please input prompt!';
+                        
+                        // Remove any existing error message
+                        const existingError = promptTextarea.parentElement.querySelector('.alert');
+                        if (existingError) {
+                            existingError.remove();
+                        }
+                        
+                        // Insert error after textarea
+                        promptTextarea.parentElement.appendChild(errorDiv);
+                        
+                        // Remove error after 3 seconds
+                        setTimeout(() => {
+                            errorDiv.remove();
+                        }, 3000);
+                        
+                        return;
+                    }
+                    
+                    // Show preloader and submit form
+                    preloader.classList.add('active');
+                    promptTextarea.closest('form').submit();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
