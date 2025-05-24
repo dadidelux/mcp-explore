@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  web:
+    image: dadidelux/mcp-meme-generator:latest
+    command: gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --workers=2 --threads=2
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SECRET_KEY=test_secret_key_123
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+      - DEBUG=1
+      - DB_NAME=django_db
+      - DB_USER=django_user
+      - DB_PASSWORD=test_db_password
+      - DB_HOST=db
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=test_redis_password
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=test_db_password
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U django_user -d django_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass test_redis_password --appendonly yes
+    volumes:
+      - redis_test_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "test_redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_test_data:
+  redis_test_data:
+  static_volume:
+  media_volume: 
