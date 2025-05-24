@@ -1,6 +1,6 @@
 # Meme Generator with MCP
 
-![Meme Generator Preview](read_me_img_2.png)
+![Meme Generator Preview](outputs/read_me_img_2.png)
 
 A powerful meme generator application that combines Django, Docker, and AI capabilities to create and manage memes.
 
